@@ -3,8 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import axios from 'axios';
 import { useSwipeable } from 'react-swipeable';
 
-// title max size chars = 54
-// desc max size chars = 600
+// Styled components (unchanged)
 const AppContainer = styled.div`
   height: 100vh;
   width: 100%;
@@ -189,31 +188,51 @@ const NewsCard = () => {
     fetchNews();
   }, []);
 
+  const handleSwipeUp = () => {
+    if (!swipingUp && !swipingDown) {
+      setSwipingUp(true);
+      setTimeout(() => {
+        setSwipingUp(false);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % newsData.length);
+      }, 500);
+    }
+  };
+
+  const handleSwipeDown = () => {
+    if (!swipingUp && !swipingDown) {
+      setSwipingDown(true);
+      setTimeout(() => {
+        setSwipingDown(false);
+        setCurrentIndex((prevIndex) =>
+          prevIndex === 0 ? newsData.length - 1 : prevIndex - 1
+        );
+      }, 500);
+    }
+  };
+
   const swipeHandlers = useSwipeable({
-    onSwipedUp: () => {
-      if (!swipingUp && !swipingDown) {
-        setSwipingUp(true);
-        setTimeout(() => {
-          setSwipingUp(false);
-          setCurrentIndex((prevIndex) => (prevIndex + 1) % newsData.length);
-        }, 500);
-      }
-    },
-    onSwipedDown: () => {
-      if (!swipingUp && !swipingDown) {
-        setSwipingDown(true);
-        setTimeout(() => {
-          setSwipingDown(false);
-          setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? newsData.length - 1 : prevIndex - 1
-          );
-        }, 500);
-      }
-    },
+    onSwipedUp: handleSwipeUp,
+    onSwipedDown: handleSwipeDown,
     swipeDuration: 500,
     preventScrollOnSwipe: true,
     trackMouse: true,
   });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'ArrowDown') {
+        handleSwipeUp();
+      } else if (event.key === 'ArrowUp') {
+        handleSwipeDown();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [newsData.length]);
 
   if (loading) {
     return <AppContainer>Loading news...</AppContainer>;
