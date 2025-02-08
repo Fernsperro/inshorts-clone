@@ -120,24 +120,27 @@ const Footer = styled.div`
 
 const AuthorInfo = styled.div`
   position: absolute;
-  bottom: 40px; /* Adjusted for more space */
+  bottom: 40px;
   left: 16px;
   right: 16px;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Vertically align items */
+  align-items: center;
 `;
 
 const AuthorName = styled.span`
-  text-align: left; /* Align left */
-  flex: 1; /* Take up remaining space */
+  text-align: left;
+  flex: 1;
 `;
 
 const AuthorDateLocation = styled.span`
-  text-align: right; /* Align right */
-  flex: 1; /* Take up remaining space */
+  text-align: right;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 `;
 
 const SwipeUpContainer = styled.div`
@@ -148,8 +151,15 @@ const SwipeUpContainer = styled.div`
   text-align: center;
   color: #1877f2;
   cursor: pointer;
-  font-size: 12px; /* Reduced font size */
+  font-size: 12px;
 `;
+
+const calculateHoursDifference = (updatedAt) => {
+  const now = new Date();
+  const updated = new Date(updatedAt);
+  const diffInHours = Math.floor((now - updated) / (1000 * 60 * 60));
+  return diffInHours;
+};
 
 const NewsCard = () => {
   const [newsData, setNewsData] = useState([]);
@@ -218,6 +228,7 @@ const NewsCard = () => {
   }
 
   const currentNewsItem = newsData[currentIndex];
+  const hoursSinceUpdate = calculateHoursDifference(currentNewsItem.updatedAt);
 
   return (
     <NewsCardContainer
@@ -235,15 +246,14 @@ const NewsCard = () => {
           <Description>{currentNewsItem.description}</Description>
         </div>
         <Footer>
-          {/* Remove Swipe Left Text  */}
           <span></span>
-          {/* <span>{currentNewsItem.date}, {currentNewsItem.time}</span>  Combining*/}
         </Footer>
       </ContentContainer>
       <AuthorInfo>
         <AuthorName>Shorts by {currentNewsItem.author}</AuthorName>
         <AuthorDateLocation>
-          {currentNewsItem.date}, {currentNewsItem.location}
+          <span>Updated {hoursSinceUpdate} hours ago</span>
+          <span>{currentNewsItem.date}, {currentNewsItem.location}</span>
         </AuthorDateLocation>
       </AuthorInfo>
       <SwipeUpContainer>
